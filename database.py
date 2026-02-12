@@ -17,7 +17,7 @@ class DBLauncher:
             cursor.execute(
                 """
                 CREATE TABLE IF NOT EXISTS user (
-                id INT PRIMARY KEY AUTOINCREMENT,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username VARCHAR(150) UNIQUE NOT NULL,
                 password_hash VARCHAR(100) NOT NULL
                 )
@@ -27,10 +27,10 @@ class DBLauncher:
             cursor.execute(
                 """
                 CREATE TABLE IF NOT EXISTS note (
-                id INT PRIMARY KEY AUTOINCREMENT,
-                user_id INT NOT NULL,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
                 content TEXT,
-                FOREIGN KEY (user_id) REFERENCES user.id
+                FOREIGN KEY (user_id) REFERENCES user(id)
                 ON DELETE CASCADE
                 )
                 """
