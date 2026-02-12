@@ -1,6 +1,6 @@
-from .database import DBConnector
-from .auth import Auth
-from .models import Note, User
+from database import DBConnector
+from useful import Encryptor
+from models import Note, User
 
 class DatabaseManager:
 
@@ -18,7 +18,7 @@ class DatabaseManager:
             conn.commit()
 
     def new_user(self, username : str, password : str):
-        password_hash = Auth.to_hash(password)
+        password_hash = Encryptor.to_hash(password)
 
         with DBConnector.get_connection() as conn:
             cursor = conn.cursor()
