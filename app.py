@@ -14,7 +14,7 @@ class App:
         DBLauncher.create_tables()
         while True:
             self.print_main_menu()
-            option = Validator.validar_option('Insira a opção correspondente: ', 3)
+            option = Validator.validate_option('Insira a opção correspondente: ', 3)
             print()
             if option == 1:
                 while True:
@@ -56,10 +56,12 @@ class App:
     def run_user_menu(self):
         while True:
             self.print_user_menu()
-            option = Validator.validar_option('Insira a opção correspondente: ', 4)
+            option = Validator.validate_option('Insira a opção correspondente: ', 4)
 
             if option == 1:
-                pass
+                text = str(input('Insira o texto da nota: '))
+                self.db_manager.new_note(self.session_user.id, text)
+                print(f'Nota adicionada com sucesso!')
             elif option == 2:
                 pass
             elif option == 3:
