@@ -1,14 +1,14 @@
 import hashlib
 from crud import DatabaseManager
 from models import User
-from useful import Response
+from useful import Response, Encryptor
 
 class Auth:
 
     
     @classmethod
     def check_password(cls, password : str, password_hash : str):
-        return cls.to_hash(password) == password_hash
+        return Encryptor.to_hash(password) == password_hash
 
     @classmethod
     def login(cls, db_manager : DatabaseManager, username : str, password : str):

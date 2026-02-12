@@ -20,7 +20,7 @@ class User:
         self.password_hash = password_hash
 
     @classmethod
-    def from_row(cls, self, row):
+    def from_row(cls, row):
         kwargs = {field : value for field, value in zip(User.FIELDS, row)}
         return cls(**kwargs)
     
