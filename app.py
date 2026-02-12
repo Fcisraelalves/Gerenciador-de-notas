@@ -25,6 +25,7 @@ class App:
                         print(f'Login efetuado com sucesso!')
                         self.session_user = self.db_manager.find_user(user)
                         self.run_user_menu()
+                        break
                     else:
                         print(f'Erro: Dados inválidos, tente novamente...')
             elif option == 2:
@@ -63,7 +64,9 @@ class App:
                 self.db_manager.new_note(self.session_user.id, text)
                 print(f'Nota adicionada com sucesso!')
             elif option == 2:
-                pass
+                notes = self.db_manager.list_notes(self.session_user.id)
+                for note in notes:
+                    print(f'    {note.id} | {note.text}')
             elif option == 3:
                 pass
             else:

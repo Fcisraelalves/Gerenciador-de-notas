@@ -10,7 +10,7 @@ class DatabaseManager:
             
             cursor.execute(
                 """
-                INSERT INTO note (user_id, text)
+                INSERT INTO note (user_id, content)
                 VALUES (?, ?);
                 """, [user_id, text]
             )
