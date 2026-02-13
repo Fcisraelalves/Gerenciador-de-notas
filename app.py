@@ -1,4 +1,4 @@
-from useful import Validator
+from useful import Validator, SystemMessages, ErrorMessages, Encryptor, Response
 from getpass import getpass
 from auth import Auth
 from database import DBLauncher
@@ -22,23 +22,26 @@ class App:
                     password = str(getpass('Insira a sua senha: '))
                     login_response = Auth.login(self.db_manager, user, password)
                     if login_response.status:
-                        print(f'Login efetuado com sucesso!')
+                        print(SystemMessages.SUCCESSFUL_LOGIN)
                         self.session_user = self.db_manager.find_user(user)
                         self.run_user_menu()
                         break
-                    print(f'Erro: {login_response.error}.')
+                    print(f'Erro: {login_response.error}')
             elif option == 2:
                 while True:
-                    user= str(input('Insira o seu usuário: '))
+                    user_response = Validator.validate_user()
+                    if not user_response.status:
+                        print(f'ERRO: {user_response.error}')
+                        continue
                     response = Validator.validate_two_passwords()
                     if response.status:
-                        self.db_manager.new_user(user, response.data['password'])
-                        print(f'Registrado com sucesso!')
+                        password_hash = Encryptor.to_hash(response.data['password'])
+                        self.db_manager.new_user(user_response.data['username'], password_hash)
+                        print(SystemMessages.SUCCESFUL_REGISTER)
                         break
-                    
-                    print(f'ERRO: {response.error}.')
+                    print(f'ERRO: {response.error}')
             else:
-                print(f'Encerrando app...')
+                print(SystemMessages.EXIT_APP)
                 break
 
     def print_main_menu(self):
@@ -58,30 +61,34 @@ class App:
             if option == 1:
                 text = str(input('Insira o texto da nota: '))
                 self.db_manager.new_note(self.session_user.id, text)
-                print(f'Nota adicionada com sucesso!')
+                print(SystemMessages.SUCCESSFUL_CREATED_NOTE)
             elif option == 2:
-               self.print_notes()
+               response = self.view_notes()
+               if not response.status:
+                   print(f'    {response.data["message"]}')
             elif option == 3:
-                self.print_notes()
-                note_id = self.select_note()
-                self.db_manager.delete_note(note_id)
-                print('Nota excluída com sucesso!')
+                response = self.view_notes()
+                if response.status:
+                    note_id = self.select_note()
+                    self.db_manager.delete_note(note_id)
+                    print(SystemMessages.SUCCESSFUL_EXCLUDED_NOTE)
+                else:
+                    print(f'    {response.data["message"]}')
             else:
                 self.session_user = None
                 break
     
-    def print_notes(self):
+    def view_notes(self):
         notes = self.db_manager.list_notes(self.session_user.id)
         if notes:
             for i, note in enumerate(notes, start=1):
                 print(f'    {i} | {note.text}')
+            return Response(status=True)
         else:
-            print(f'    Não há notas para exibir...')
-    
+            return Response(status=False, data={'message' : SystemMessages.NOTHING_TO_VIEW})
+        
     def select_note(self):
         notes = self.db_manager.list_notes(self.session_user.id)
         option = Validator.validate_option('Selecione o id tarefa que deseja excluir: ', len(notes))
         return notes[option-1].id
     
-
-

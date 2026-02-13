@@ -4,6 +4,19 @@ import getpass
 from enum import StrEnum
 from crud import DatabaseManager
 
+class SystemMessages(StrEnum):
+    SUCCESSFUL_LOGIN = 'Login efetuado com sucesso!'
+    SUCCESFUL_REGISTER = 'Regsitro efetuado com sucesso!'
+    EXIT_APP = 'Encerrando app...'
+    SUCCESSFUL_CREATED_NOTE = 'Nota criada com sucesso!'
+    SUCCESSFUL_EXCLUDED_NOTE = 'Nota excluída com sucesso!'
+    NOTHING_TO_VIEW = 'Nenhuma nota para visualizar...'
+
+class ErrorMessages(StrEnum):
+    DIFFERENT_PASSWORDS = 'As senhas não correspondem!'
+    NOT_FOUND_USER = 'Usuário não encontrado!'
+    WRONG_PASSWORD = 'A senha está incorreta!'
+    NOT_UNIQUE_USER = 'Já existe um usuário com esse username!'
 
 class Validator:
     @classmethod
@@ -21,14 +34,14 @@ class Validator:
 
         if password_1 == password_2:
             return Response(status=True, data={'password' : password_1})
-        return Response(status=False, error='As senhas não correspondem')
+        return Response(status=False, error=ErrorMessages.DIFFERENT_PASSWORDS)
 
     @classmethod
     def validate_user(cls):
         username = str(input('Insira o seu usuário: '))
         user = DatabaseManager().find_user(username)
         if user:
-            return Response(status=False, error='Já existe um usuário com esse username!')
+            return Response(status=False, error=ErrorMessages.NOT_UNIQUE_USER)
         return Response(status=True, data={'username' : username})
     
 class Session:
@@ -47,4 +60,3 @@ class Encryptor:
         password_hash = hashlib.sha256()
         password_hash.update(password.encode('utf-8'))
         return password_hash.hexdigest()
-    
