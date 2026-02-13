@@ -64,11 +64,25 @@ class App:
                 self.db_manager.new_note(self.session_user.id, text)
                 print(f'Nota adicionada com sucesso!')
             elif option == 2:
-                notes = self.db_manager.list_notes(self.session_user.id)
-                for note in notes:
-                    print(f'    {note.id} | {note.text}')
+               self.print_notes()
             elif option == 3:
-                pass
+                self.print_notes()
+                note_id = self.select_note()
+                self.db_manager.delete_note(note_id)
+                print('Nota excluída com sucesso!')
             else:
                 self.session_user = None
                 break
+    
+    def print_notes(self):
+        notes = self.db_manager.list_notes(self.session_user.id)
+        for i, note in enumerate(notes, start=1):
+            print(f'    {i} | {note.text}')
+    
+    def select_note(self):
+        notes = self.db_manager.list_notes(self.session_user.id)
+        option = Validator.validate_option('Selecione o id tarefa que deseja excluir: ', len(notes))
+        return notes[option-1].id
+    
+
+

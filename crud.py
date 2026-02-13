@@ -29,6 +29,8 @@ class DatabaseManager:
                 VALUES (?, ?);
                 """, [username, password_hash]
             )
+
+            conn.commit()
         
     def list_notes(self, user_id : int):
 
@@ -61,3 +63,17 @@ class DatabaseManager:
             return User.from_row(result)
         return result
     
+    def delete_note(self, note_id : int):
+        with DBConnector.get_connection() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                DELETE FROM note WHERE id = ?;
+                """, [note_id]
+            )
+
+            conn.commit()
+            
+
+        
