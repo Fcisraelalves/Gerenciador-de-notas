@@ -26,21 +26,17 @@ class App:
                         self.session_user = self.db_manager.find_user(user)
                         self.run_user_menu()
                         break
-                    else:
-                        print(f'Erro: Dados inválidos, tente novamente...')
+                    print(f'Erro: {login_response.error}.')
             elif option == 2:
                 while True:
                     user= str(input('Insira o seu usuário: '))
-                    password_1 = str(getpass('Insira a sua senha: '))
-                    password_2 = str(getpass('Confirme a sua senha: '))
-
-                    if password_1 != password_2:
-                        print(f'ERRO: As senhas não correspondem.')
-                        continue
-                    else:
-                        self.db_manager.new_user(user, password_1)
+                    response = Validator.validate_two_passwords()
+                    if response.status:
+                        self.db_manager.new_user(user, response.data['password'])
                         print(f'Registrado com sucesso!')
                         break
+                    
+                    print(f'ERRO: {response.error}.')
             else:
                 print(f'Encerrando app...')
                 break
@@ -76,8 +72,11 @@ class App:
     
     def print_notes(self):
         notes = self.db_manager.list_notes(self.session_user.id)
-        for i, note in enumerate(notes, start=1):
-            print(f'    {i} | {note.text}')
+        if notes:
+            for i, note in enumerate(notes, start=1):
+                print(f'    {i} | {note.text}')
+        else:
+            print(f'    Não há notas para exibir...')
     
     def select_note(self):
         notes = self.db_manager.list_notes(self.session_user.id)
