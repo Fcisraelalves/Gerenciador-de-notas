@@ -6,7 +6,7 @@ from crud import DatabaseManager
 
 class SystemMessages(StrEnum):
     SUCCESSFUL_LOGIN = 'Login efetuado com sucesso!'
-    SUCCESFUL_REGISTER = 'Regsitro efetuado com sucesso!'
+    SUCCESFUL_REGISTER = 'Registro efetuado com sucesso!'
     EXIT_APP = 'Encerrando app...'
     SUCCESSFUL_CREATED_NOTE = 'Nota criada com sucesso!'
     SUCCESSFUL_EXCLUDED_NOTE = 'Nota excluída com sucesso!'
@@ -17,13 +17,27 @@ class ErrorMessages(StrEnum):
     NOT_FOUND_USER = 'Usuário não encontrado!'
     WRONG_PASSWORD = 'A senha está incorreta!'
     NOT_UNIQUE_USER = 'Já existe um usuário com esse username!'
+    NOT_A_NUMBER = 'O valor inserido deve ser um número!'
+    INVALID_OPTION = 'selecione uma opção válida!'
 
 class Validator:
+
+    @classmethod
+    def validate_number(cls, message : str):
+        while True:
+            try:
+                number = int(input(message))
+            except (TypeError, ValueError):
+                print(f'ERRO: {ErrorMessages.NOT_A_NUMBER}')
+                continue
+            else:
+                return number
+            
     @classmethod
     def validate_option(cls, message : str, max : int, min : int = 1):
-        option = int(input(message))
+        option = cls.validate_number(message)
         while option < min or option > max:
-            print(f'ERRO: selecione uma opção válida.')
+            print(f'ERRO: {ErrorMessages.INVALID_OPTION}')
             option = int(input(message))
         return option
     
@@ -37,9 +51,9 @@ class Validator:
         return Response(status=False, error=ErrorMessages.DIFFERENT_PASSWORDS)
 
     @classmethod
-    def validate_user(cls):
+    def validate_user(cls, db_manager : DatabaseManager):
         username = str(input('Insira o seu usuário: '))
-        user = DatabaseManager().find_user(username)
+        user = db_manager.find_user(username)
         if user:
             return Response(status=False, error=ErrorMessages.NOT_UNIQUE_USER)
         return Response(status=True, data={'username' : username})

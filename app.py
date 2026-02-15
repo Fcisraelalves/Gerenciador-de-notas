@@ -29,7 +29,7 @@ class App:
                     print(f'Erro: {login_response.error}')
             elif option == 2:
                 while True:
-                    user_response = Validator.validate_user()
+                    user_response = Validator.validate_user(self.db_manager)
                     if not user_response.status:
                         print(f'ERRO: {user_response.error}')
                         continue
