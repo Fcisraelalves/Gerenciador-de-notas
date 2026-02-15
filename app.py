@@ -1,4 +1,4 @@
-from useful import Validator, SystemMessages, ErrorMessages, Encryptor, Response
+from useful import Validator, SystemMessages, Encryptor, Response
 from getpass import getpass
 from auth import Auth
 from database import DBLauncher
